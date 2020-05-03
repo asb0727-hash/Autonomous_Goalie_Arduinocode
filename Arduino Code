@@ -1,0 +1,46 @@
+#include <Servo.h>
+#include <NewPing.h>
+
+Servo myservo;
+
+const int pirPin = 4; // Input for PIR sensor (HC-S501)
+
+bool pirValue; // To store output from the PIR sensor
+
+const int servoPin=7; // Input for the servo motor
+
+const int TriggerPin=10; // Output for the ultrasonic sensor (HC-SR04)
+
+const int EchoPin=11; // Input for the ultrasonic sensor
+
+NewPing sonar(TriggerPin, EchoPin, 200);
+
+
+void setup() {
+  delay(10000);
+  myservo.attach(7);
+  Serial.begin(9600);
+  
+  pinMode(servoPin, OUTPUT);
+  pinMode(pirPin, INPUT);
+  pinMode(TriggerPin, OUTPUT);
+  pinMode(EchoPin, INPUT);
+}
+
+void loop() {
+  pirValue = digitalRead(pirPin);
+  int distance= sonar.ping_cm(); //distance detected by ultrasonic sensor in cm.
+  int i=0;
+  if (pirValue==HIGH or distance<10){
+    for (i=10;i<85;i++){
+      myservo.write(i);
+      delay(5);
+    }// if motion is detected by the PIR sensor, or the ultrasonic sensor detects an object<10 cm away, servo motor rotates 85 degrees.
+    delay(1000);
+    for (i=85;i>10;i--){
+      myservo.write(i);
+      delay(5);
+    }
+  }
+  delay(1000);
+}
